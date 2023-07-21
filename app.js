@@ -15,7 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.addEventListener('keyup', control);
-  document.addEventListener('touchstart', control); // Listen for touchstart event to detect tapping on mobile.
+
+  // Use the ontouchstart property directly on the body element to handle touch events.
+  body.ontouchstart = control;
 
   let position = 0;
   function jump() {
