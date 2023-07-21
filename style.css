@@ -44,3 +44,10 @@
     width: 100%;
     height: 200px;
   }
+
+  #alert {
+    text-align: center;
+    margin-top: 10px;
+    color: red;
+    font-size: 18px;
+}
