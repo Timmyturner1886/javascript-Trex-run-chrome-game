@@ -1,46 +1,73 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const dino = document.querySelector('.dino');
-  let isJumping = false; // Declare and initialize isJumping variable to keep track of whether the dino is already jumping or not.
-
+  const dino = document.querySelector('.dino')
+  const grid = document.querySelector('.grid')
+  const body = document.querySelector('body')
+  const alert = document.getElementById('alert')
+  let isJumping = false
+  let gravity = 0.9
+  let isGameOver = false
+  
   function control(e) {
     if (e.keyCode === 32) {
-      if (!isJumping) { // Check if the dino is not already jumping to prevent multiple jumps in succession.
-        isJumping = true; // Set isJumping to true to indicate that the dino is starting to jump.
-        jump();
+      if (!isJumping) {
+        isJumping = true
+        jump()
       }
-      console.log('pressed'); // Log that the spacebar was pressed (for testing purposes).
     }
   }
-
-  document.addEventListener('keyup', control); // Listen for the keyup event to detect when the spacebar is released.
-
-  // Function to make the dino jump.
+  document.addEventListener('keyup', control)
+  
+  let position = 0
   function jump() {
-    let position = 0;
-
-    // Set up an interval to control the jump animation.
+    let count = 0
     let timerId = setInterval(function () {
-      // downward
-      if (position === 150) {
-        clearInterval(timerId); // If the dino reaches the maximum jump height, clear the interval to stop the upward motion.
-        console.log('down');
-
-        // Set up another interval to control the downward motion after reaching the maximum height.
+      //move down
+      if (count === 15) {
+        clearInterval(timerId)
         let downTimerId = setInterval(function () {
-          if (position === 0) {
-            clearInterval(downTimerId); // If the dino returns to the ground, clear the interval to stop the downward motion.
-            isJumping = false; // Reset isJumping after the jump is complete, allowing the dino to jump again.
-            console.log('up');
+          if (count === 0) {
+            clearInterval(downTimerId)
+            isJumping = false
           }
-          position -= 30; // Move the dino upwards (negative value) to simulate the jump motion.
-          dino.style.bottom = position + 'px'; // Update the dino's position.
-        }, 20);
+          position -= 5
+          count--
+          position = position * gravity
+          dino.style.bottom = position + 'px'
+        },20)
+  
       }
-
-      // upward
-      console.log('up'); // Log that the dino is moving upward (for testing purposes).
-      position += 30; // Move the dino upwards.
-      dino.style.bottom = position + 'px'; // Update the dino's position.
-    }, 20);
+      //move up
+      position +=30
+      count++
+      position = position * gravity
+      dino.style.bottom = position + 'px'
+    },20)
   }
-});
+  
+  function generateObstacles() {
+    let randomTime = Math.random() * 4000
+    let obstaclePosition = 1000
+    const obstacle = document.createElement('div')
+    if (!isGameOver) obstacle.classList.add('obstacle')
+    grid.appendChild(obstacle)
+    obstacle.style.left = obstaclePosition + 'px'
+  
+    let timerId = setInterval(function() {
+      if (obstaclePosition > 0 && obstaclePosition < 60 && position < 60) {
+        clearInterval(timerId)
+        alert.innerHTML = 'Game Over'
+        isGameOver = true
+        //remove all children
+        body.removeChild(body.firstChild)
+        while (grid.firstChild) {
+          grid.removeChild(grid.lastChild)
+        }
+        
+      }
+      obstaclePosition -=10
+      obstacle.style.left = obstaclePosition + 'px'
+    },20)
+    if (!isGameOver) setTimeout(generateObstacles, randomTime)
+  }
+  generateObstacles()
+  })
